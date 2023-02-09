@@ -58,6 +58,11 @@ app.use(cors())
 app.use(express.json())
 
 const server = http.createServer(app);
+
+app.post('/login', (req, res) => {
+    const userId = req.body.userId
+    res.json({ user: users.find(u => u.userId === userId) })
+})
 server.listen(3000, () => {
     console.log(`server running on http://localhost:${3000}`);
 });
