@@ -18,7 +18,7 @@ function FirstPage() {
 
 ###### SecondPage.tsx
 
-```
+```typescript
 function SecondPage() {
     return <div>Second Page</div>
 }
