@@ -63,6 +63,12 @@ app.post('/login', (req, res) => {
     const userId = req.body.userId
     res.json({ user: users.find(u => u.userId === userId) })
 })
+
+app.get('/:userId/rooms', (req, res) => {
+    const userId = req.params.userId;
+    res.json({ rooms: users.find(u => u.userId === userId).rooms.map(roomId => rooms.find(r => r.roomId === roomId)) })
+});
+
 server.listen(3000, () => {
     console.log(`server running on http://localhost:${3000}`);
 });
