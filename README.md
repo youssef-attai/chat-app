@@ -18,7 +18,7 @@ function FirstPage() {
 
 ###### SecondPage.tsx
 
-```typescript
+```tsx
 function SecondPage() {
     return <div>Second Page</div>
 }
@@ -28,7 +28,7 @@ function SecondPage() {
 
 ###### PagesContainer.tsx
 
-```
+```tsx
 function PagesContainer() {
     const [ currentPage, setCurrentPage ] = useState<'first' | 'second'>('first')
     return currentPage === 'first' ? <FirstPage /> : <SecondPage />
@@ -40,7 +40,7 @@ function PagesContainer() {
 
 ###### PagesContainerContext.ts
 
-```
+```typescript
 type pages = 'first' | 'second'
 
 interface PagesContainerContextValue {
@@ -53,7 +53,7 @@ const PagesContainerContext = createContext({} as PagesContainerContextValue)
 
 ###### usePagesContainer.ts
 
-```
+```typescript
 function usePagesContainer() {
     return useContext(PagesContainerContext)
 }
@@ -61,7 +61,7 @@ function usePagesContainer() {
 
 ###### PagesContainerProvider.tsx
 
-```
+```tsx
 function PagesContainerProvider({ children }: PropsWithChildren) {
     const [ currentPage, setCurrentPage ] = useState<pages>('first')
 
@@ -80,7 +80,7 @@ function PagesContainerProvider({ children }: PropsWithChildren) {
 
 ###### PagesContainer.tsx
 
-```
+```tsx
 function Page() {
     const { currentPage } = usePagesContainer()
     return currentPage === 'first' ? <FirstPage /> : <SecondPage />
@@ -93,7 +93,9 @@ function PagesContainer() {
 
 You can now use `usePagesContainer` from `FirstPage` and `SecondPage`:
 
-```
+###### FirstPage.tsx
+
+```tsx
 function FirstPage() {
     const { navigate } = usePagesContainer()
     return <>
