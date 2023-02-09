@@ -1,5 +1,6 @@
 import express from 'express'
 import cors from 'cors'
+import { Server } from 'socket.io'
 import http from 'http'
 
 let latestMsgId = 3
@@ -58,6 +59,11 @@ app.use(cors())
 app.use(express.json())
 
 const server = http.createServer(app);
+const io = new Server(server, {
+    cors: {
+        origin: 'http://localhost:5173'
+    }
+});
 
 app.post('/login', (req, res) => {
     const userId = req.body.userId
@@ -67,6 +73,24 @@ app.post('/login', (req, res) => {
 app.get('/:userId/rooms', (req, res) => {
     const userId = req.params.userId;
     res.json({ rooms: users.find(u => u.userId === userId).rooms.map(roomId => rooms.find(r => r.roomId === roomId)) })
+});
+
+io.on('connection', (socket) => {
+    const userId = socket.handshake.query.userId
+
+    console.log(userId, 'connected');
+
+    users.find(u => u.userId === userId).rooms.forEach(r => socket.join(r))
+
+    socket.on('send-chat-msg', (message) => {
+        console.log(message);
+        latestMsgId++
+        io.in(message.roomId).emit('receive-chat-msg', {...message, messageId: `msg${latestMsgId}`})
+    })
+
+    socket.on('disconnect', () => {
+        console.log(userId, 'disconnected');
+    })
 });
 
 server.listen(3000, () => {
