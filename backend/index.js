@@ -1,3 +1,6 @@
+import express from 'express'
+import cors from 'cors'
+import http from 'http'
 
 let latestMsgId = 3
 
@@ -48,4 +51,14 @@ const rooms = [
         ]
     },
 ]
+
+const app = express();
+
+app.use(cors())
+app.use(express.json())
+
+const server = http.createServer(app);
+server.listen(3000, () => {
+    console.log(`server running on http://localhost:${3000}`);
+});
 
