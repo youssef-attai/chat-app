@@ -10,7 +10,7 @@ Anyway, here is my navigation solution:
 
 ###### FirstPage.tsx
 
-```
+```javascript
 function FirstPage() {
     return <div>First Page</div>
 }
