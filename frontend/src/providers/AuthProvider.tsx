@@ -6,6 +6,16 @@ function AuthProvider({ children }: PropsWithChildren) {
     const [currentUser, setCurrentUser] = useState<User | undefined>();
 
     const login = useCallback(async (userId: string) => {
+        const res = await fetch('http://localhost:3000/login', {
+            method: 'post',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ userId })
+        })
+        const { user } = await res.json()
+        setCurrentUser(user)
     }, [])
 
 
