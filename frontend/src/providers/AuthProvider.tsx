@@ -1,26 +1,51 @@
 import { PropsWithChildren, useCallback, useState } from 'react'
 import AuthContext, { AuthContextValue } from '../contexts/AuthContext'
-import User from '../models/User';
+import authAPI from '../api/authClient';
+import { CurrentUser, LoginResponse, RefreshResponse, SignUpResponse } from '../api/schemas';
+
 
 function AuthProvider({ children }: PropsWithChildren) {
     const [accessToken, setAccessToken] = useState('');
+    const [currentUser, setCurrentUser] = useState<CurrentUser | undefined>();
 
-    const login = useCallback(async (userId: string) => {
-        const res = await fetch('http://localhost:3000/login', {
-            method: 'post',
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ userId })
-        })
-        const { user } = await res.json()
-        setCurrentUser(user)
-    }, [])
+    const login = useCallback(async (username: string, password: string) => {
+        try {
+            const {
+                data: {
+                    accessToken: token,
+                    currentUser: user
+                } } = await authAPI.post<LoginResponse>('/login',
+                    {
+                        username,
+                        password
+                    },
+                    {
+                        headers: {
+                            'Accept': 'application/json',
+                            'Content-Type': 'application/json'
+                        },
+                    });
+            setAccessToken(token);
+            setCurrentUser(user);
+        } catch (error) {
+            setAccessToken('');
+            setCurrentUser(undefined);
+        }
+    }, []);
 
+    const signUp = useCallback(async (username: string, password: string) => {
+        const {
+            data: {
+                accessToken: token,
+                currentUser: user
+            } } = await authAPI.post<SignUpResponse>('/new',
+                {
+                    username,
+                    password
+                });
 
-    const signUp = useCallback(async () => {
-
+        setAccessToken(token);
+        setCurrentUser(user);
     }, [])
 
     const refresh = useCallback(async () => {
@@ -41,11 +66,11 @@ function AuthProvider({ children }: PropsWithChildren) {
     }, []);
 
     const logout = useCallback(async () => {
-        setCurrentUser(undefined)
+        await authAPI.get('/logout');
+        setCurrentUser(undefined);
     }, [])
 
-
-    const contextValue: AuthContextValue = { currentUser, login, signUp, logout }
+    const contextValue: AuthContextValue = { currentUser, accessToken, login, signUp, refresh, logout }
 
     return (
         <AuthContext.Provider value={contextValue}>

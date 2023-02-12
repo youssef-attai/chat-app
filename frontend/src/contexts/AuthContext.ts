@@ -1,7 +1,8 @@
 import { createContext } from "react"
-import User from "../models/User";
+import { CurrentUser } from "../api/schemas";
 
 export interface AuthContextValue {
+    currentUser?: CurrentUser
     accessToken: string
     login: Function
     signUp: Function
