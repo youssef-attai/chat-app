@@ -2,9 +2,10 @@ import { createContext } from "react"
 import User from "../models/User";
 
 export interface AuthContextValue {
-    currentUser?: User
+    accessToken: string
     login: Function
     signUp: Function
+    refresh: Function
     logout: Function
 }
 

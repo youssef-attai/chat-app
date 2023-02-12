@@ -3,7 +3,7 @@ import AuthContext, { AuthContextValue } from '../contexts/AuthContext'
 import User from '../models/User';
 
 function AuthProvider({ children }: PropsWithChildren) {
-    const [currentUser, setCurrentUser] = useState<User | undefined>();
+    const [accessToken, setAccessToken] = useState('');
 
     const login = useCallback(async (userId: string) => {
         const res = await fetch('http://localhost:3000/login', {
@@ -23,6 +23,22 @@ function AuthProvider({ children }: PropsWithChildren) {
 
     }, [])
 
+    const refresh = useCallback(async () => {
+        console.log("refreshing");
+        try {
+            const {
+                data: {
+                    accessToken: token,
+                    currentUser: user
+                } } = await authAPI.get<RefreshResponse>('/refresh');
+
+            setAccessToken(token);
+            return token;
+        } catch (error) {
+            console.log(error);
+            setAccessToken('');
+        }
+    }, []);
 
     const logout = useCallback(async () => {
         setCurrentUser(undefined)
