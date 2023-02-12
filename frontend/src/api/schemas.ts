@@ -1,17 +1,16 @@
 export interface Room {
-    roomId: string,
+    _id: string,
     name: string
 }
 
 export interface Friend {
-    userId: string,
+    _id: string,
     username: string
 }
 
 export interface CurrentUser {
-    userId: string
-    username: string,
-    rooms: Room[]
+    _id: string
+    username: string
 }
 
 export interface LoginResponse {
