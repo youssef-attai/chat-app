@@ -32,7 +32,7 @@ app.use('/rooms', roomsRouter);
 app.use('/friends', friendsRouter);
 
 io.on('connection', async (socket) => {
-    const userId = socket.handshake.query.userId
+    const userId = socket.handshake.query._id
 
     console.log(userId, 'connected');
 

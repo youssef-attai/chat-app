@@ -7,13 +7,17 @@ import User from "../models/User.js";
 
 const router = Router();
 
+router.get('/', isAuthenticated, async (req, res) => {
+    const roomIds = req.currentUser.rooms;
+    const rooms = await Room.find({ _id: { $in: roomIds } }, { _id: 1, name: 1 });
+    res.status(200).json({ rooms });
+})
+
 router.post('/', isAuthenticated, async (req, res) => {
     const roomId = new mongoose.Types.ObjectId();
 
     const roomMembers = req.body.members?.filter(member => req.currentUser.friends.includes(member)) ?? [];
     const members = [req.currentUser._id.toString(), ...roomMembers];
-
-    console.log(members);
 
     try {
         const newRoom = new Room({
@@ -22,7 +26,6 @@ router.post('/', isAuthenticated, async (req, res) => {
         });
         newRoom._id = roomId;
 
-        console.log(roomId);
         await User.updateMany({ _id: { $in: members } }, {
             $push: { rooms: roomId }
         });

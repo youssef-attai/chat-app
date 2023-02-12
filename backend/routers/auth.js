@@ -1,17 +1,16 @@
 import { Router } from 'express'
 import bcrypt from 'bcrypt'
 import mongoose from 'mongoose'
-import jwt from 'jsonwebtoken'
 
 import { createAccessToken, createRefreshToken } from '../utils.js'
-import { REFRESH_TOKEN_EXPIRE_SECONDS, REFRESH_TOKEN_SECRET_KEY } from '../env.js'
+import { REFRESH_TOKEN_EXPIRE_SECONDS } from '../env.js'
 
 import User from '../models/User.js'
 
 const router = Router()
 
 function loginResponse(accessToken, user) {
-    return { accessToken, currentUser: { userId: user._id, username: user.username, rooms: user.rooms } };
+    return { accessToken, currentUser: { _id: user._id, username: user.username } };
 }
 
 router.post("/login", async (req, res) => {

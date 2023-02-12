@@ -5,19 +5,10 @@ import isAuthenticated from "../middlewares/isAuthenticated.js";
 
 const router = Router();
 
-function getFriendsResponse(friends) {
-    return friends.map(friend => (
-        {
-            userId: friend._id.toString(),
-            username: friend.username
-        }
-    ));
-}
-
 router.get('/', isAuthenticated, async (req, res) => {
     try {
         const friends = await User.find({ _id: { $in: req.currentUser.friends } });
-        res.status(200).json(getFriendsResponse(friends));
+        res.status(200).json({ friends });
     } catch (error) {
         console.log(error);
         res.status(500).json({ message: 'something went wrong' });
