@@ -10,7 +10,7 @@ export function ChatProvider({ children }: PropsWithChildren) {
     const [receiveChatMsgCallbacks, setReceiveChatMsgCallbacks] = useState<Function[]>([]);
 
     useEffect(() => {
-        if (currentUser === undefined) { } else socket = io('http://localhost:3000', { query: { userId: currentUser.userId } });
+        if (currentUser === undefined) { } else socket = io('http://localhost:3000', { query: { _id: currentUser._id } });
 
         return () => {
             socket.disconnect();
@@ -29,7 +29,7 @@ export function ChatProvider({ children }: PropsWithChildren) {
 
     const sendMessage = async (message: string, roomId: string) => {
         socket.emit('send-chat-msg', {
-            content: message, roomId, sender: currentUser!.userId
+            content: message, roomId, sender: currentUser!._id
         })
     }
 
