@@ -53,8 +53,7 @@ function AuthProvider({ children }: PropsWithChildren) {
         try {
             const {
                 data: {
-                    accessToken: token,
-                    currentUser: user
+                    accessToken: token
                 } } = await authAPI.get<RefreshResponse>('/refresh');
 
             setAccessToken(token);
