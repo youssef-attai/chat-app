@@ -5,13 +5,15 @@ import { useAuthenticationPage } from "../hook"
 export default function LoginPage() {
     const { navigate } = useAuthenticationPage()
     const { login } = useAuth()
-    const [userId, setUserId] = useState('');
+    const [username, setUsername] = useState('');
+    const [password, setPassword] = useState('');
 
     return (
         <>
             <h1>Login</h1>
-            <input type="text" value={userId} onChange={(e) => setUserId(e.target.value)} placeholder="user ID" />
-            <button onClick={() => { login(userId) }}>login</button>
+            <input type="text" value={username} onChange={(e) => setUsername(e.target.value)} placeholder="username" />
+            <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="password" />
+            <button onClick={() => { login(username, password) }}>login</button>
             <button onClick={() => { navigate('signup') }}>go to sign up page</button>
         </>
     )
