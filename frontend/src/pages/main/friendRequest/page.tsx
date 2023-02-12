@@ -1,16 +1,15 @@
 import { useState } from "react"
 import friendsAPI from "../../../api/friendsClient";
-import useAuth from "../../../hooks/useAuth";
+import useRefreshOnExpire from "../../../hooks/useRefreshOnExpire";
 import useMainPage from "../hook";
 
 export default function FriendRequestPage() {
     const [username, setUsername] = useState<string>('');
-    const { accessToken } = useAuth();
     const { navigate } = useMainPage();
 
-    const handleSend = async () => {
-        await friendsAPI(accessToken).post('/request', { username });
-    }
+    const sendFriendRequestFn = useRefreshOnExpire(async (token: string) => {
+        await friendsAPI(token).post('/request', { username });
+    });
 
     return (
         <>
@@ -22,7 +21,7 @@ export default function FriendRequestPage() {
             </button>
             <h1>Send a friend request</h1>
             <input type="text" placeholder="username" value={username} onChange={e => setUsername(e.target.value)} />
-            <button onClick={handleSend}>send</button>
+            <button onClick={async () => { sendFriendRequestFn(); }}>send</button>
         </>
     )
 }

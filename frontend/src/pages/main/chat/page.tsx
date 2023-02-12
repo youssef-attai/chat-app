@@ -1,12 +1,25 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
+import roomsAPI from "../../../api/roomsClient";
+import { Room } from "../../../api/schemas";
 import useAuth from "../../../hooks/useAuth"
+import useRefreshOnExpire from "../../../hooks/useRefreshOnExpire";
 import useMainPage from "../hook";
 
 function ChatPage() {
     const { navigate } = useMainPage();
-    const { currentUser, logout } = useAuth();
+    const { logout } = useAuth();
+    const [rooms, setRooms] = useState<Room[]>([]);
     const [message, setMessage] = useState('');
     const [selectedRoomId, setSelectedRoomId] = useState('');
+
+    const getRoomsFn = useRefreshOnExpire(async (token: string) => {
+        const { data } = await roomsAPI(token).get<{ rooms: Room[] }>('/');
+        setRooms(data.rooms);
+    })
+
+    useEffect(() => {
+        getRoomsFn().catch(error => console.log(error));
+    }, [])
 
     return (
         <>
@@ -27,13 +40,7 @@ function ChatPage() {
             <input type="text" value={message} onChange={(e) => setMessage(e.target.value)} placeholder="message" />
             <button>send</button>
             <ul>
-                {currentUser?.rooms.map(room => {
-                    return (
-                        <li key={room.roomId}>
-                            {room.name}
-                        </li>
-                    )
-                })}
+                {rooms.map((room => (<li key={room._id}>{room.name}</li>)))}
             </ul>
             <button onClick={() => { logout() }}>logout</button>
         </>

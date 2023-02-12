@@ -1,23 +1,31 @@
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Friend } from "../../../api/schemas";
-import useAuth from "../../../hooks/useAuth";
 import useMainPage from "../hook";
 import friendsAPI from '../../../api/friendsClient';
 import roomsAPI from '../../../api/roomsClient';
-import { AxiosError } from "axios";
+import useRefreshOnExpire from "../../../hooks/useRefreshOnExpire";
 
 export default function CreateRoomPage() {
     const { navigate } = useMainPage();
-    const { accessToken, refresh } = useAuth();
     const [friends, setFriends] = useState<Friend[]>([]);
     const [roomName, setRoomName] = useState<string>('');
     const [selectedFriends, setSelectedFriends] = useState<string[]>([]);
+    
+    const createRoomFn = useRefreshOnExpire(async (token: string) => {
+        await roomsAPI(token).post('/', {
+            roomName,
+            members: selectedFriends
+        });
+        navigate('chat');
+    });
+
+    const getFriendsFn = useRefreshOnExpire(async (token: string) => {
+        const { data } = await friendsAPI(token).get<{ friends: Friend[] }>('/');
+        setFriends(data.friends);
+    })
 
     useEffect(() => {
-        friendsAPI(accessToken)
-            .get<Friend[]>('/')
-            .then(({ data }) => setFriends(data))
-            .catch(error => console.log(error));
+        getFriendsFn().catch(err => console.log(err));
     }, []);
 
     const selectFriend = (friend: string) => {
@@ -27,42 +35,20 @@ export default function CreateRoomPage() {
         });
     }
 
-    // TODO: Extract the "try-again-on-token-expire" logic into a separate generic function
-    const handleCreate = useCallback(async () => {
-        try {
-            await roomsAPI(accessToken).post('/', {
-                roomName,
-                members: selectedFriends
-            });
-            navigate('chat');
-        } catch (error) {
-            if ((error as AxiosError).response?.status == 403) {
-                const newToken = await refresh();
-                await roomsAPI(newToken).post('/', {
-                    roomName,
-                    members: selectedFriends
-                });
-                navigate('chat');
-            } else {
-                console.log(error);
-            }
-        }
-    }, [accessToken]);
-
     return (
         <>
             <button onClick={() => { navigate('chat') }}>back to chat</button>
             <h1>Create room</h1>
             <input type="text" name="roomName" placeholder="room name" value={roomName} onChange={e => setRoomName(e.target.value)} />
-            <button onClick={handleCreate}>create</button>
+            <button onClick={async () => { await createRoomFn(); }}>create</button>
             <ul>
                 {selectedFriends.map(friend => (
-                    <p key={friend}>{friends.find(f => f.userId == friend)?.username}</p>
+                    <p key={friend}>{friends.find(f => f._id == friend)?.username}</p>
                 ))}
             </ul>
             <ul>
                 {friends.map(friend => (
-                    <button key={friend.userId} onClick={() => { selectFriend(friend.userId) }}>{friend.username}</button>
+                    <button key={friend._id} onClick={() => { selectFriend(friend._id) }}>{friend.username}</button>
                 ))}
             </ul>
         </>
