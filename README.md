@@ -2,7 +2,7 @@
 
 I implemented basic a navigation mechanism using React Contexts.
 
-I didn't use [React Router](https://reactrouter.com/en/main) because I find it confusing, even though their docs are great, probably one of the best docs out there.
+I didn't use [React Router](https://reactrouter.com/en/main) because I find it v6.4+ confusing. Their docs are great though.
 
 Anyway, here is my navigation solution:
 
