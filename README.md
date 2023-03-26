@@ -1,8 +1,8 @@
 # Demo Chat App
 
-I implemented basic a navigation mechanism using React Contexts.
+I implemented basic a navigation mechanism using React's Context API.
 
-I didn't use [React Router](https://reactrouter.com/en/main) because I find v6.4+ confusing. Their docs are great though.
+I didn't use something like [React Router](https://reactrouter.com/en/main) because what I am trying to achieve here is different.
 
 Anyway, here is my navigation solution:
 
